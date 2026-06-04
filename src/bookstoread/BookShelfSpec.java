@@ -1,10 +1,12 @@
 package bookstoread;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -125,7 +127,7 @@ public class BookShelfSpec {
                 shelf.arrange();
 
         assertEquals(
-                Arrays.asList(
+                asList(
                         codeComplete,
                         effectiveJava,
                         mythicalManMonth
@@ -149,7 +151,7 @@ public class BookShelfSpec {
                 shelf.books();
 
         assertEquals(
-                Arrays.asList(
+                asList(
                         effectiveJava,
                         codeComplete,
                         mythicalManMonth
@@ -157,4 +159,11 @@ public class BookShelfSpec {
                 books
         );
     }
+    @Test
+    void bookshelfArrangedByUserProvidedCriteria() {
+        shelf.add(effectiveJava, codeComplete, mythicalManMonth);
+        List<Book> books = shelf.arrange(Comparator.<Book>naturalOrder().reversed());
+        assertEquals(asList(mythicalManMonth, effectiveJava, codeComplete), books, () -> "Books in a bookshelf are arranged in descending order of book title");
+    }
+
 }
