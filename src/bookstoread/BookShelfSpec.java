@@ -1,15 +1,16 @@
 package bookstoread;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.time.Year;
+import java.util.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class BookShelfSpec {
@@ -19,6 +20,7 @@ public class BookShelfSpec {
     private Book effectiveJava;
     private Book codeComplete;
     private Book mythicalManMonth;
+    private Book cleanCode;
 
     @BeforeEach
     void init() {
@@ -57,6 +59,8 @@ public class BookShelfSpec {
                                 1
                         )
                 );
+        cleanCode = new Book("Clean Code", "Robert C. Martin", LocalDate.of(2008, Month.AUGUST, 1));
+
     }
 
     @Test
@@ -164,6 +168,15 @@ public class BookShelfSpec {
         shelf.add(effectiveJava, codeComplete, mythicalManMonth);
         List<Book> books = shelf.arrange(Comparator.<Book>naturalOrder().reversed());
         assertEquals(asList(mythicalManMonth, effectiveJava, codeComplete), books, () -> "Books in a bookshelf are arranged in descending order of book title");
+    }
+    @Test
+    @DisplayName("books inside bookshelf are grouped by publication year")
+    void groupBooksInsideBookShelfByPublicationYear() {
+        shelf.add(effectiveJava, codeComplete, mythicalManMonth, cleanCode);
+        Map<Year, List<Book>> booksByPublicationYear = shelf.groupByPublicationYear();
+        assertThat(booksByPublicationYear).containsKey(Year.of(2008)).containsValues(Arrays.asList(effectiveJava, cleanCode));
+        assertThat(booksByPublicationYear).containsKey(Year.of(2004)).containsValues(Collections.singletonList(codeComplete));
+        assertThat(booksByPublicationYear).containsKey(Year.of(1975)).containsValues(Collections.singletonList(mythicalManMonth));
     }
 
 }
